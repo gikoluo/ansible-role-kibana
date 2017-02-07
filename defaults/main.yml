@@ -1,0 +1,21 @@
+---
+
+kibana_download_from_remote: false
+
+kibana_host: 0.0.0.0
+kibana_install_dir: /opt/kibana/
+kibana_port: 5601
+#kibana_version: "5.1.2"
+kibana_download_base_url: https://artifacts.elastic.co/downloads/kibana
+kibana_download_path: "files/elk"
+
+kibana:
+  # Used to determine which config file to use
+  elasticsearch:
+    host: 127.0.0.1
+    port: 9200
+  plugins: [ ]
+  # Examples:
+  #  - plugin_name: mobz/elasticsearch-head
+  #    plugin_dir:  head
+

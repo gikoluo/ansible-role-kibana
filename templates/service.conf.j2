@@ -1,0 +1,13 @@
+description "Kibana5"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+
+limit nofile 32768 32768
+
+script
+	exec {{ kibana_install_dir }}bin/kibana \
+		-c {{ kibana_install_dir }}/config/kibana.yml
+end script

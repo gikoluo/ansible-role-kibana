@@ -1,0 +1,66 @@
+---
+
+- name: "Copy tar gz"
+  become: yes
+  copy:
+    src: "{{ kibana_download_path }}/{{ kibana_tarball }}.tar.gz"
+    dest: "/tmp/{{ kibana_tarball }}.tar.gz"
+    
+- name: Extract the Kibana tarball
+  become: yes
+  unarchive:
+    src: "/tmp/{{ kibana_tarball }}.tar.gz"
+    dest: "/tmp/"
+    copy: no
+    creates: "/tmp/{{ kibana_tarball }}"
+
+- name: Install Kibana
+  become: yes
+  command: "cp -R /tmp/{{ kibana_tarball }} {{ kibana_install_dir }}"
+  args:
+    creates: "{{ kibana_install_dir }}"
+    removes: "/tmp/{{ kibana_tarball }}"
+
+- name: Install Kibana plugins
+  become: yes
+  command: "{{ kibana_install_dir }}/bin/kibana plugin --install {{ item.plugin_name }}"
+  args:
+    chdir: "{{ kibana_install_dir }}"
+    creates: "{{ kibana_install_dir }}/installedPlugins/{{ item.plugin_dir }}"
+  environment:
+    JAVA_HOME: /usr/share/java
+  with_items: "{{ kibana.plugins }}"
+
+- name: Ensure Systemd Service Configuraiton
+  become: yes
+  template:
+    src: kibana.service.j2
+    dest: /etc/systemd/system/kibana.service
+    mode: 0764
+  notify:
+    - start kibana
+  when: ansible_service_mgr is defined and ansible_service_mgr == 'systemd'
+
+- name: Install Kibana service
+  become: yes
+  template:
+    src: service.conf.j2
+    dest: /etc/init/kibana.conf
+    mode: 0764
+  notify:
+    - start kibana
+  when: ansible_service_mgr is not defined or ansible_service_mgr != 'systemd'
+
+- name: Enable Kibana service
+  become: yes
+  service:
+    name: kibana
+    enabled: yes
+  notify:
+    - start kibana
+
+- name: Remove tmp files
+  become: yes
+  file:
+    path: "/tmp/{{ kibana_tarball }}"
+    state: absent

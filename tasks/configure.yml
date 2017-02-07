@@ -1,0 +1,15 @@
+---
+
+- name: Configure Kibana
+  become: yes
+  template:
+    src: kibana.yml.j2
+    dest: "{{ kibana_install_dir }}config/kibana.yml"
+  notify:
+    - restart kibana
+
+- name: Ensure Kibana service is started
+  become: yes
+  service:
+    name: kibana
+    state: started

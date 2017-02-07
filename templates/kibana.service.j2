@@ -1,0 +1,12 @@
+[Unit]
+Description=Kibana {{ kibana_version }}
+After=syslog.target network.target
+
+[Service]
+Type=simple
+Environment=NODE_ENV=production
+ExecStart={{ kibana_install_dir }}/bin/kibana -c {{ kibana_install_dir }}/config/kibana.yml
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

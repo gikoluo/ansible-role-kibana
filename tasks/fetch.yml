@@ -1,0 +1,17 @@
+#
+# fetch .tar.gz files
+#
+
+- stat:
+    path: "{{ kibana_download_path }}/{{ kibana_tarball }}.tar.gz"
+  register: st
+
+- debug: msg="Download {{ kibana_tarball_url }} to {{ kibana_download_path }}/{{ kibana_tarball }}.tar.gz"
+
+- name: get Kibana tarball (as tar.gz file)
+  get_url:
+    url:     "{{ kibana_tarball_url }}"
+    dest:    "{{ kibana_download_path }}/{{ kibana_tarball }}.tar.gz"
+    mode:    0644
+  when: kibana_download_from_remote and not st.stat.exists
+

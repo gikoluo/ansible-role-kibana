@@ -1,0 +1,13 @@
+- hosts: 127.0.0.1
+  connection: local
+  
+  vars_files:
+    - "defaults/main.yml"
+
+  tasks:
+    - include: tasks/set-role-variables.yml
+      #kibana_version: "5.1.3"
+    - name: fetch .tar.gz files from Elastic site
+      include: tasks/fetch.yml
+      vars:
+        kibana_download_from_remote: true
