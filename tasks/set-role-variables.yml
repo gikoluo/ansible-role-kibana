@@ -10,3 +10,20 @@
   set_fact:
     kibana_tarball_url:  "{{ kibana_download_base_url }}/{{ kibana_tarball }}.tar.gz"
 
+- name: Check if Firewalld is running
+  command: systemctl is-active firewalld
+  ignore_errors: yes
+  register: service_firewalld_status_rs
+
+- name: check service_firewalld_enabled
+  set_fact:
+    service_firewalld_enabled:  yes
+  when: service_firewalld_status_rs.rc==0 and service_firewalld_status_rs.stdout == 'active'
+
+
+
+- name: check service_firewalld_enabled
+  set_fact:
+    service_firewalld_enabled:  no
+  when: service_firewalld_status_rs.rc!=0 or service_firewalld_status_rs.stdout != 'active'
+

@@ -21,11 +21,13 @@
     creates: "{{ kibana_install_dir }}"
     removes: "/tmp/{{ kibana_tarball }}"
 
-- firewalld:
+- name: Enable firewalld port
+  firewalld:
     port: "{{kibana_port}}/tcp"
     permanent: true
     state: enabled
   become: yes
+  when: service_firewalld_enabled
 
 
 - name: Install Kibana plugins
